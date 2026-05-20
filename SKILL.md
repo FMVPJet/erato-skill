@@ -139,7 +139,7 @@ Run these checks in order after the draft is complete:
     ```
 - **Song title suggestion.** Suggest 1-2 candidate song titles based on the hook line or central image. Format: `【建议歌名】A / B`
 - **Format the output.** See "Output Format" below.
-- **Suno export** (only when user requests or mentions Suno/Udio/AI music). Load `references/suno-export.md` and follow the export workflow: count characters → generate style tag → present for user confirmation → output export version with emotion-curve-based `[Instrumental]` placement.
+- **Suno export** (only when user requests or mentions Suno/Udio/AI music). Load `references/suno-export.md` and follow the 8-step export workflow: (1) count characters, (2) generate Global Style Prompt (detailed 4-element English paragraph), (3) present for user confirmation, (4) wait for OK/adjustment, (5) generate Sectional Prompts (map emotion curve to arrangement density + song progression logic), (6) insert `[Instrumental]` breaks per emotion curve rules, (7) generate parameter recommendations (Vocal Gender / Weirdness / Style Influence), (8) output export version with usage instructions.
 - **Iteration prompt.** End with: "如需修改某段或某句，告诉我具体位置和方向。" If Suno export was NOT triggered in this session, append: "需要 Suno/Udio 导出版可以告诉我。"
 
 ### User requests modifications
