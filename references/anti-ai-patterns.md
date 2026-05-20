@@ -73,3 +73,105 @@ After writing, scan for:
 3. Count "万能抒情词" — if more than 2 in the whole song, replace them.
 4. Is there at least one "surprise" image per verse? If not, find the most generic line and make it specific.
 5. Read the chorus aloud — does it sound like it could be from any song? If yes, it needs more personality.
+
+## 画面感自检（Visual Test）
+
+Good lyrics create pictures in the listener's mind. AI lyrics often have "words without images" — you read them and your mind is blank.
+
+### The test
+
+After writing a section, close your eyes and ask:
+1. **What can I SEE?** (specific scenes, objects, actions)
+2. **What can I HEAR?** (sounds, dialogue, ambient noise)
+3. **What can I FEEL?** (temperature, texture, weight, smell)
+
+If you can't answer any of these = the lyrics are too abstract, lacking visual presence.
+
+### 坏例子（无画面）
+```
+我的心里充满了思念
+时间让我们渐行渐远
+```
+→ After reading, your mind is empty. No picture.
+
+### 好例子（有画面）
+```
+你的外套还挂在我的衣柜
+拉链坏了，我一直没修
+```
+→ You can SEE: closet, coat, broken zipper  
+→ You can FEEL: reluctance to throw it away, reluctance to fix it
+
+## 画面感的层次
+
+**Level 1: 静态画面**（物件、场景）
+```
+桌上的咖啡冷了
+```
+→ You see: table, coffee cup
+
+**Level 2: 动态画面**（动作、变化）
+```
+咖啡冷了，我还是没喝
+```
+→ You see: the action (or lack of action), time passing
+
+**Level 3: 感官细节**（声音、温度、质感）
+```
+咖啡冷了，杯壁上的水珠滑下来
+```
+→ You see: condensation, the droplet sliding down  
+→ You feel: the cold, the wetness
+
+**Level 4: 情感投射**（画面 + 情感）
+```
+咖啡冷了，像我们的对话
+```
+→ The image carries emotional weight through metaphor
+
+Good lyrics reach at least **Level 2**. Excellent lyrics operate at **Level 3-4**.
+
+### 实战练习
+
+**抽象句** → **画面句**
+
+❌ "我很孤独"  
+✅ "我一个人数对面楼的灯，一盏一盏灭掉"
+
+❌ "时间过去了"  
+✅ "日历一页一页撕掉，房间里纸屑越来越多"
+
+❌ "我想你了"  
+✅ "你的牙刷还在杯子里，毛都炸开了"
+
+❌ "我们分手了"  
+✅ "你的钥匙放在桌上，没有关门的声音"
+
+### 画面感的来源
+
+1. **具体物件** > 抽象概念  
+   "外套" > "温暖"  
+   "空调外机" > "等待"
+
+2. **动作** > 状态  
+   "一页一页撕掉" > "时间过去"  
+   "关上门" > "离开"
+
+3. **细节** > 概括  
+   "拉链坏了" > "旧了"  
+   "毛都炸开了" > "用了很久"
+
+4. **五感** > 纯情感  
+   "杯壁上的水珠" (视觉+触觉) > "冷"  
+   "关门的声音" (听觉) > "离开"
+
+## 画面感 Self-check
+
+写完后，逐段检查：
+- [ ] 每段至少有 2 个具体物件或场景？
+- [ ] 至少达到 Level 2（有动作或变化）？
+- [ ] 闭上眼睛能"看到"画面？
+- [ ] 画面是否独特（不是"月亮/星星/海"这种通用画面）？
+- [ ] 副歌的画面是否比主歌更强烈/更大/更有冲击力？
+
+如果有任何一项答"否"，找出最抽象的那句，用具体意象重写。

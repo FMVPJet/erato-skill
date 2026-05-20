@@ -6,6 +6,8 @@ Use this when imitating, creating for, or mixing the style of a known lyricist o
 
 For any artist, profile their voice along these six axes. Note specifics — vague descriptors like "abstract" or "emotional" are useless for actually writing.
 
+**Note**: For singers (not lyricists), also add dimension 7 (vocal characteristics) to account for their voice's physical properties.
+
 ### 1. Vocabulary preference (用词偏好)
 
 - Words they reach for repeatedly (concrete nouns, distinctive verbs).
@@ -44,17 +46,35 @@ For any artist, profile their voice along these six axes. Note specifics — vag
 - Fatalism / self-mockery / detachment / fervor / tenderness / nostalgia / restraint.
 - The *default* mood the artist returns to even when the literal subject changes.
 
+### 7. Vocal characteristics (声线特征)
+
+Consider the singer's voice, which affects lyric rhythm and word choice:
+
+- **音域 (Range)**: High register / mid register / low register strengths?
+- **速度 (Speed)**: Fast articulation (周杰伦, 蔡依林) vs slow, sustained notes (陈奕迅, 张学友)?
+- **转音 (Runs/Melisma)**: Good at vocal runs (张惠妹, 林俊杰) → can design complex emotions on long notes
+- **气口 (Breath)**: Long breath capacity (suits long phrases) vs short breath (needs frequent breath points)?
+- **咬字 (Articulation)**: Clear enunciation (suits fast songs, rap) vs soft/lazy (suits slow songs, atmosphere)?
+
+**实战应用**:
+- **周杰伦** → Short phrases, fast rhythm, many pauses, suits narrative and image stacking
+- **陈奕迅** → Long phrases, sustained notes, emotional turns, suits inner monologue
+- **邓紫棋** → High note explosions, vocal runs, design emotional climax in high register
+- **李宗盛** → Spoken-word style, colloquial, many breath points, like telling a story
+- **林俊杰** → Mid-range comfort, smooth transitions, suits delicate emotions and piano-driven songs
+- **张惠妹** → Powerful belting, wide range, suits big emotional releases and anthems
+
 ## Process
 
 When given an artist:
 
-1. **Check for saved profile first.** Look for `references/artist-profiles/{artist-name}.md`. If it exists, load it and skip to step 5.
-2. Recall 3–5 representative songs.
+1. **Check for saved profile first.** Look for `references/artist-profiles/{artist-name}.md`. If it exists, load it and skip to step 6.
+2. Recall 3–5 representative songs from model memory.
 3. Fill in the six dimensions with concrete details (not adjectives).
-4. **Self-check**: Can you name 3+ representative songs by this artist with specific titles? If not, you don't know them well enough — proceed to step 5.
-5. If you can't fill a dimension confidently or failed the self-check, `WebSearch` for the artist + "歌词 风格" or for representative works and reviews.
-6. If a dimension still resists profiling, ask the user for 2–3 representative lyrics and re-derive.
-7. **Optionally save the profile.** If you successfully profiled the artist (passed self-check) and have Write access, consider saving to `references/artist-profiles/{artist-name}.md`. This is a convenience for future sessions, not a requirement.
+4. **Self-check**: Can you name 3+ representative songs by this artist with specific titles? Can you describe at least 4 of the 6 dimensions with concrete examples (not vague adjectives)? If not, you don't know them well enough — proceed to step 5.
+5. **Trigger WebSearch** for the artist + "歌词 风格" or for representative works and reviews. Follow the escalation strategy in `web-search-strategy.md` (max 2 attempts for artist profiling).
+6. If a dimension still resists profiling after search, ask the user for 2–3 representative lyrics and re-derive.
+7. **Optionally save the profile.** If you successfully profiled the artist via WebSearch (not from memory) AND the artist is mainstream/likely to be requested again, save to `references/artist-profiles/{artist-name}.md`. Don't save profiles for one-off indie artists or artists you already knew from memory.
 
 ## Quick Reference: Major Mandarin and Cantonese Lyricists
 

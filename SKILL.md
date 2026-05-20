@@ -1,9 +1,22 @@
 ---
 name: erato
+version: 1.2.1
 description: Write Mandarin or Cantonese song lyrics in three modes — imitation (rewrite an existing song in another artist's voice), creation (write for a given artist and theme), or original (write from scratch given style references). Named after Erato, the Greek muse of lyric poetry. Use when the user asks to 写歌词 / 作词 / 仿写一首歌 / 让某歌手风格唱另一首 / 创作一首XX风格的歌 / 原创一首歌词. Skip for pure lyrics translation or analysis.
 ---
 
 # Lyrics Writing
+
+## Quick Start (for Claude)
+
+When this skill is invoked:
+
+1. **First**: Determine the mode (imitation / creation / original / melody-first)
+2. **Then**: Load the corresponding reference files as you go (don't load all at once)
+3. **Write**: Follow the mode's workflow step-by-step
+4. **Check**: Run quality gates after writing
+5. **Output**: Format according to the output template
+
+**Key principle**: Load references on-demand, not upfront. This keeps token usage efficient.
 
 ## Overview
 
@@ -45,9 +58,17 @@ If the request mixes signals (e.g. "写一首陈奕迅风格、像《富士山�
 
 ### Mode 0: Melody-First (填词模式)
 
-Activated when the user provides rhythmic or melodic constraints. Load `references/melody-first-mode.md` for full details.
+Activated when the user provides **explicit rhythmic or melodic constraints**. Load `references/melody-first-mode.md` for full details.
 
-**Trigger**: user provides per-line character counts, stress patterns, pitch contours, or says "帮我填词" / "按旋律写词".
+**Trigger**: user provides ANY of:
+- Per-line character counts (e.g. "7-7-5-7")
+- Stress patterns (e.g. "x-X-x-X")
+- Pitch contours (e.g. "高-中-低-高")
+- Reference melody (e.g. "按《富士山下》的旋律填词")
+
+**Ambiguous trigger**: If user says "帮我填词" / "按旋律写词" but provides NO constraints:
+- Ask: "你有具体的旋律约束吗？比如每行字数、节奏重音、或音高走向？如果没有，我就按常规模式写词。"
+- Wait for user response before proceeding
 
 This mode combines with any of the three main modes (imitation + melody-first, creation + melody-first, original + melody-first). The melody constraints become hard requirements; **character count must match exactly (±0), overriding the ±2 tolerance in imitation mode**.
 
@@ -55,24 +76,26 @@ This mode combines with any of the three main modes (imitation + melody-first, c
 
 Inputs: source song lyrics + target artist + language.
 
-1. **Get the source lyrics.** Prefer what the user provided. Otherwise recall from model memory; if unsure, load `references/web-search-strategy.md` and follow the escalation strategy (up to 3 attempts with different query formulations). If still unavailable, ask the user for the lyrics.
+1. **Get the source lyrics.** Prefer what the user provided. Otherwise recall from model memory; if unsure, **trigger WebSearch** following `references/web-search-strategy.md` escalation strategy (up to 3 attempts with different query formulations). If still unavailable, ask the user for the lyrics.
 2. **Distill the emotional core and narrative skeleton.** Write one sentence for the emotional core (*what the song is really about beneath the literal story*, e.g. 《珠玉》→「珍视一段易碎而珍贵的关系/记忆」), then 2–3 sentences for the narrative skeleton (key turning points or progression). Capture the emotional arc per section.
 3. **Capture the structural skeleton** — number of sections, lines per section, **characters per line**, rhyme density, where the chorus sits. Record the per-line character count — the new lyrics should match within ±2 characters per line.
-4. **Profile the target artist's voice.** Load `references/style-extraction.md` and apply the six-dimension method. For artists you don't know well (≤2 representative songs recallable, no specific stylistic features), load `references/web-search-strategy.md` and follow the escalation strategy.
-5. **Rewrite.** Tell the *same emotional core* using the target artist's vocabulary, viewpoint, and imagery, following the original's structural skeleton and emotional arc. Load `references/rhyme-guide.md` for rhyme strategy (match original's rhyme density and turning points). Load `references/chorus-hook-techniques.md` — identify the original's hook position and write a new hook of equal weight in the same position. Load `references/anti-ai-patterns.md` while writing — avoid over-symmetry and 万能抒情词 as you go. Match the original's per-line character count within ±2 characters. **Verse 2 must differ from Verse 1** — shift the angle (different time, different viewpoint, deeper layer, or consequence of V1's situation). **Final Chorus may vary** from earlier choruses — add a tag line, change 1-2 words to intensify emotion, or extend by one line.
+4. **Profile the target artist's voice.** Load `references/style-extraction.md` and apply the six-dimension method (seven dimensions for singers: add vocal characteristics). For artists you don't know well (≤2 representative songs recallable, no specific stylistic features), **trigger WebSearch** following `references/web-search-strategy.md` escalation strategy (up to 2 attempts for artist profiling). If still insufficient, ask the user for 2-3 representative lyrics.
+5. **Design the emotion curve.** Load `references/emotion-dynamics.md` and analyze the source song's emotion curve (mark intensity 1-10 for each section). The new lyrics should follow the same curve shape.
+6. **Rewrite.** Tell the *same emotional core* using the target artist's vocabulary, viewpoint, and imagery, following the original's structural skeleton and emotional arc. Load `references/imagery-library.md` — choose imagery that fits the target artist's style and the emotion of each section (at least 2 concrete images per verse). Load `references/rhyme-guide.md` for rhyme strategy (match original's rhyme density and turning points; consider rhyme emotional color). Load `references/chorus-hook-techniques.md` — identify the original's hook position and write a new hook of equal weight in the same position. Load `references/lyric-rhythm.md` — ensure hook line is the shortest rhythmic unit and rhythm matches emotion intensity. Load `references/anti-ai-patterns.md` while writing — avoid over-symmetry and 万能抒情词 as you go. Match the original's per-line character count within ±2 characters. **Verse 2 must differ from Verse 1** — shift the angle (different time, different viewpoint, deeper layer, or consequence of V1's situation). **Final Chorus may vary** from earlier choruses — add a tag line, change 1-2 words to intensify emotion, or extend by one line.
    
    **When style distance is large** (e.g. cute→philosophical, rock→folk): preserve the emotional core's *essence* (joy/sadness/release) but allow the *expression mode* to shift (naive joy → knowing joy, raw anger → quiet defiance). State the transformation clearly in the output's `【关键转换】` field.
-6. **Do NOT preserve the source's literal narrative or specific imagery.** A direct line transplant feels forced — replace surface details with ones natural to the target artist.
+7. **Do NOT preserve the source's literal narrative or specific imagery.** A direct line transplant feels forced — replace surface details with ones natural to the target artist.
 
 ### Mode 2: Creation (创作)
 
 Inputs: target artist + theme/emotion/story + language.
 
 1. **Align on the theme.** If the user is vague (only "失恋"), you may ask one anchoring question (which stage? whose viewpoint?). Don't force it — for terse requests, take the most common reading.
-2. **Profile the target artist's voice.** Load `references/style-extraction.md`.
+2. **Profile the target artist's voice.** Load `references/style-extraction.md` and apply the seven-dimension method (including vocal characteristics for singers).
 3. **Check theme/artist fit.** If clearly mismatched (a children's-song artist + a dark theme, etc.), surface the conflict and offer two options (swap artist / swap theme). Proceed with whatever the user decides.
 4. **Pick a structure.** Load `references/song-structures.md` and choose one suited to the theme and emotion.
-5. **Write.** Use the artist's typical vocabulary, viewpoint, and imagery to write a new song on the given theme. Load `references/rhyme-guide.md` for rhyme strategy. Load `references/chorus-hook-techniques.md` and apply hook techniques to the chorus — write the hook line first, then build the rest of the chorus around it. Load `references/anti-ai-patterns.md` while writing. **Verse 2 must differ from Verse 1** — shift the angle (different time, different viewpoint, deeper layer, or consequence of V1's situation). **Final Chorus may vary** — add a tag line, change 1-2 words to intensify, or extend by one line.
+5. **Design the emotion curve.** Load `references/emotion-dynamics.md` and choose a curve type that fits the theme. Ensure V1-C intensity gap ≥3, and Final Chorus is the peak.
+6. **Write.** Use the artist's typical vocabulary, viewpoint, and imagery to write a new song on the given theme. Load `references/imagery-library.md` — choose imagery that fits the artist's style (at least 2 concrete images per verse). Load `references/rhyme-guide.md` for rhyme strategy (consider rhyme emotional color: open rhymes for chorus climax, closed rhymes for introspective verses). Load `references/chorus-hook-techniques.md` and apply hook techniques to the chorus — write the hook line first, then build the rest of the chorus around it. Load `references/lyric-rhythm.md` — ensure hook line is the shortest rhythmic unit, vary phrasing patterns, and match rhythm to emotion intensity. Load `references/anti-ai-patterns.md` while writing. **Verse 2 must differ from Verse 1** — shift the angle (different time, different viewpoint, deeper layer, or consequence of V1's situation). **Final Chorus may vary** — add a tag line, change 1-2 words to intensify, or extend by one line.
 
 ### Mode 3: Original (原创)
 
@@ -83,15 +106,32 @@ Inputs: theme + style specification (one of: abstract description / artist mix /
    - **Artist mix** (e.g. "林夕 + 方文山"): load `references/style-extraction.md`, profile each artist, find the intersection (shared traits) and union (combined palette).
    - **Lyric snippets**: derive vocabulary tendencies, syntax patterns, and rhetorical density from the snippets.
 2. **Pick a structure.** Load `references/song-structures.md`.
-3. **Write.** Load `references/rhyme-guide.md` for rhyme strategy. Load `references/chorus-hook-techniques.md` and apply hook techniques — write the hook line first, then build the rest of the chorus around it. Load `references/anti-ai-patterns.md` while writing. **Verse 2 must differ from Verse 1** — shift the angle (different time, different viewpoint, deeper layer, or consequence of V1's situation).
+3. **Design the emotion curve.** Load `references/emotion-dynamics.md` and choose a curve type based on the style spec (e.g. "忧郁的民谣" → plateau or wave type; "爆发力的摇滚" → build-up type). Ensure V1-C intensity gap ≥3.
+4. **Write.** Load `references/imagery-library.md` — choose imagery that fits the style spec (at least 2 concrete images per verse; use the pairing principles for fresh combinations). Load `references/rhyme-guide.md` for rhyme strategy (consider rhyme emotional color to match the mood). Load `references/chorus-hook-techniques.md` and apply hook techniques — write the hook line first, then build the rest of the chorus around it. Load `references/lyric-rhythm.md` — ensure hook line is the shortest rhythmic unit, vary phrasing patterns, and match rhythm to emotion intensity. Load `references/anti-ai-patterns.md` while writing. **Verse 2 must differ from Verse 1** — shift the angle (different time, different viewpoint, deeper layer, or consequence of V1's situation). **Final Chorus may vary** — add a tag line, change 1-2 words to intensify, or extend by one line.
 
 ### After writing: quality gates (all modes)
 
 Run these checks in order after the draft is complete:
 
 - **Singability check.** Load `references/singability.md`. Verify chorus peak lines end with open vowels; verify long lines have breath points; flag closed vowels on emotional climax positions.
-- **Tone-harmony annotation** (only when language is 粤语 *and* the user enabled the mode). **Important**: In tone-harmony mode, prioritize tone-matched characters *while writing* — annotation is the final verification step, not a post-hoc fix. If a character's tone clashes with the melody, swap it before finalizing the line. Load `references/cantonese-tones.md` and append the 1–9 tone marks to each line. Then load `references/tone-harmony-scoring.md` and run the scoring system — if score < 75, fix flagged positions before presenting to user.
+- **Tone-harmony annotation** (only when language is 粤语 *and* the user enabled the mode). Two scenarios:
+  
+  **Scenario A: User provided melody constraints** (pitch contours via melody-first mode):
+  - Prioritize tone-matched characters *while writing* — choose characters whose tone bucket (high/mid/low) aligns with the melody pitch at that position
+  - Load `references/cantonese-tones.md` and append the 1–9 tone marks to each line
+  - Load `references/tone-harmony-scoring.md` and run the scoring system — if score < 75, fix flagged positions before presenting to user
+  
+  **Scenario B: User did NOT provide melody** (tone-harmony mode without melody-first):
+  - Write naturally first, then annotate with tone marks
+  - Load `references/cantonese-tones.md` and append the 1–9 tone marks to each line
+  - Do NOT attempt to "optimize" tone placement without melody information
+  - Output includes tone marks for reference, but no scoring (scoring requires melody)
+  - Add a note in output: `【协音说明】已标注声调，如需优化协音请提供旋律音高信息`
 - **Self-check.** Load `references/mode-prompts.md` and run the checklist for the mode just executed. Revise if any item fails.
+- **Copyright check** (imitation and creation modes only). Scan the output for:
+  - **Imitation mode**: iconic lines or signature imagery from the source song (e.g. "富士山下" if imitating 《富士山下》, "红玫瑰/白玫瑰" if imitating 《红玫瑰》)
+  - **Creation mode**: iconic lines from the target artist's catalog (e.g. don't write "天青色等烟雨" in a 方文山-style song, don't write "如果你太累" in an 陈奕迅-style song)
+  - If found, replace with original wording that conveys the same meaning/emotion
 - **Emotion curve** (only on first full output, not on partial edits). Append a text-based emotion curve:
     ```
     [V1] ▂▃▃▂  描述
@@ -99,8 +139,8 @@ Run these checks in order after the draft is complete:
     ```
 - **Song title suggestion.** Suggest 1-2 candidate song titles based on the hook line or central image. Format: `【建议歌名】A / B`
 - **Format the output.** See "Output Format" below.
-- **Suno export** (only when user requests or mentions Suno/Udio/AI music). Load `references/suno-export.md` and append an export-ready version.
-- **Iteration prompt.** End with: "如需修改某段或某句，告诉我具体位置和方向。"
+- **Suno export** (only when user requests or mentions Suno/Udio/AI music). Load `references/suno-export.md` and follow the export workflow: count characters → generate style tag → present for user confirmation → output export version with emotion-curve-based `[Instrumental]` placement.
+- **Iteration prompt.** End with: "如需修改某段或某句，告诉我具体位置和方向。" If Suno export was NOT triggered in this session, append: "需要 Suno/Udio 导出版可以告诉我。"
 
 ### User requests modifications
 
@@ -214,13 +254,16 @@ Don't append rhyme analysis, rhetoric breakdowns, or "creation notes" unless the
 
 ## Resources
 
-- `references/style-extraction.md` — six-dimension method + lyricist quick-reference. Loaded by all three modes.
+- `references/style-extraction.md` — seven-dimension method (six lyrical + vocal characteristics) + lyricist quick-reference. Loaded by all three modes.
 - `references/abstract-style-keywords.md` — maps abstract style descriptors to concrete lyrical features. Loaded by original mode (abstract branch).
 - `references/song-structures.md` — structure templates and selection guidance. Loaded by creation and original modes.
 - `references/song-metadata-db.md` — lightweight metadata database of well-known songs (structure, line counts, emotional arcs). Loaded by imitation mode for quick structural lookup, and by creation mode for reference.
-- `references/rhyme-guide.md` — 普通话十三辙 + 粤语韵部 + 押韵策略. Loaded during writing in all modes.
+- `references/emotion-dynamics.md` — emotion intensity curves (build-up, wave, flashback, plateau, burst-fade) and per-section intensity design. Loaded before writing in all modes.
+- `references/imagery-library.md` — curated imagery organized by emotion, pairing principles, and artist-specific imagery preferences. Loaded during writing in all modes.
+- `references/lyric-rhythm.md` — phrasing patterns, rhythm-emotion mapping, hook line rhythm design, and breath point rules. Loaded during writing in all modes.
+- `references/rhyme-guide.md` — 普通话十三辙 + 粤语韵部 + 押韵策略 + 韵母情感色彩. Loaded during writing in all modes.
 - `references/chorus-hook-techniques.md` — hook line techniques. Loaded during writing in all modes.
-- `references/anti-ai-patterns.md` — patterns to avoid (over-symmetry, 万能抒情词, missing surprise). Loaded during writing in all modes.
+- `references/anti-ai-patterns.md` — patterns to avoid (over-symmetry, 万能抒情词, missing surprise) + 画面感自检. Loaded during writing in all modes.
 - `references/singability.md` — vowel openness, breath points, held-note guidance. Loaded during singability check.
 - `references/melody-first-mode.md` — constraints and workflow for filling words to an existing melody. Loaded when user provides rhythmic/melodic constraints.
 - `references/mode-prompts.md` — per-mode self-check checklists. Loaded during self-check quality gate.

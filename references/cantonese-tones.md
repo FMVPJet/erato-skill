@@ -2,6 +2,17 @@
 
 Loaded only when the Cantonese tone-harmony mode is on. Cantonese has 9 tonal categories; lyrics must align tone height with melody height or the listener hears a different word.
 
+## Two modes of tone-harmony work
+
+**With melody** (melody-first + tone-harmony):
+- You know the pitch contour, so you can actively choose tone-matched characters while writing
+- Annotation + scoring + optimization
+
+**Without melody** (tone-harmony only):
+- You don't know the pitch contour, so you can only annotate existing lyrics
+- Annotation only, no optimization
+- Tell the user: "已标注声调，如需优化协音请提供旋律音高信息"
+
 ## The 9-tone system
 
 | # | Name | Pitch | Example | Jyutping |

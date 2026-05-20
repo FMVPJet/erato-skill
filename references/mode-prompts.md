@@ -22,7 +22,6 @@ After writing the lyrics, run the checklist for the mode you used. If any item f
 - [ ] Did you avoid lifting signature lines from the artist's catalog?
 - [ ] Does Verse 2 shift angle from Verse 1? (Time, viewpoint, consequence, or deeper layer.)
 - [ ] Is there at least one "surprise" image per verse?
-- [ ] Do chorus peak lines end with open vowels? (Singability check.)
 
 ## Original 原创
 

@@ -241,3 +241,119 @@
 - **Test Case 10**：应该通过（模糊场景澄清是 Mode Routing 的一部分）
 
 如果 Test Case 6 失败（模型没联网），说明"自检"步骤没生效，需要再强化 style-extraction.md 的措辞。
+
+---
+
+## Test Case 11: Melody-First + Imitation 组合
+
+**输入**：
+```
+让林俊杰唱陈奕迅的《富士山下》，按原曲旋律填词
+```
+
+**预期行为**：
+1. 识别为 imitation + melody-first 组合
+2. 提取《富士山下》的字数格律（每行字数）
+3. 用林俊杰风格重写，字数必须完全匹配（±0）
+4. 输出包含 `【填词模式】是` 和 `【字数格律】...`
+
+**验收点**：
+- 每行字数与原曲完全一致
+- 风格是林俊杰的
+- 情感内核保留
+
+---
+
+## Test Case 12: Multi-Variant Mode
+
+**输入**：
+```
+写一首陈奕迅风格的失恋歌，给我两个版本
+```
+
+**预期行为**：
+1. 识别为 creation 模式 + multi-variant
+2. 输出两个完整版本：
+   - Version A: 更忠实于陈奕迅典型风格（林夕/黄伟文）
+   - Version B: 更实验性的角度
+
+**验收点**：
+- 两个版本都是完整歌词
+- 明确标注 Version A / Version B
+- 两个版本在角度或表达方式上有明显差异
+
+---
+
+## Test Case 13: Hook Candidates Mode
+
+**输入**：
+```
+写一首关于城市孤独的歌，副歌不确定怎么写，给我几个 hook 候选
+```
+
+**预期行为**：
+1. 识别为 original 模式
+2. 在写副歌前，先输出 2-3 个 hook line 候选
+3. 等用户选择后再继续
+
+**验收点**：
+- 输出 2-3 个 hook 候选，每个附带简短说明（修辞手法或方向）
+- 明确询问用户倾向哪个
+- 不直接输出完整歌词
+
+---
+
+## Test Case 14: Suno Export
+
+**输入**：
+```
+写一首周杰伦风格的歌，主题是童年，导出 Suno 格式
+```
+
+**预期行为**：
+1. 识别为 creation 模式，Suno export = on
+2. 写完歌词后，加载 `suno-export.md`
+3. 输出标准格式 + Suno 导出格式（带风格标签）
+
+**验收点**：
+- 标准输出包含完整歌词
+- 附加 Suno 导出部分，包含：
+  - 风格标签（如 `[C-Pop, Nostalgic, Piano]`）
+  - 段落标签格式（`[Verse]`, `[Chorus]`）
+  - 无中文标题（Suno 不支持）
+
+---
+
+## Test Case 15: 用户要求改结构
+
+**输入**：
+```
+（先生成一首 verse-chorus-verse-chorus-bridge-chorus 的歌）
+把结构改成 verse-pre-chorus-chorus-verse-pre-chorus-chorus
+```
+
+**预期行为**：
+1. 识别为"改结构"（不是局部改词）
+2. 提示用户："改结构相当于重新创作，我会保留主题和风格，但段落内容会重写。继续吗？"
+3. 用户确认后，按新结构重写
+
+**验收点**：
+- 必须提示用户（改结构 = 重写）
+- 新结构符合要求
+- 主题和风格保持一致
+
+---
+
+## 更新后的预期通过率
+
+- **Test Case 1-5**：应该 100% 通过（核心 workflow）
+- **Test Case 6**：取决于模型是否真的联网（可能需要手动触发 WebSearch）
+- **Test Case 7**：应该通过（冲突检测是明确写在 workflow 里的）
+- **Test Case 8**：应该通过（修改分支已加入）
+- **Test Case 9**：应该通过（版权边界已强化）
+- **Test Case 10**：应该通过（模糊场景澄清是 Mode Routing 的一部分）
+- **Test Case 11**：应该通过（Melody-First 组合已明确）
+- **Test Case 12**：应该通过（Multi-Variant 模式已在 SKILL.md 定义）
+- **Test Case 13**：应该通过（Hook Candidates 模式已在 SKILL.md 定义）
+- **Test Case 14**：应该通过（Suno export 已在 workflow 中）
+- **Test Case 15**：需要在 SKILL.md 的"User requests modifications"部分补充"改结构"分支

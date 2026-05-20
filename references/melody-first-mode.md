@@ -4,12 +4,13 @@ When the user provides rhythmic or melodic constraints (syllable counts, stress 
 
 ## Trigger
 
-Activate this mode when the user provides ANY of:
+Activate this mode ONLY when the user provides **explicit constraints**:
 - Per-line syllable/character counts (e.g. "7-7-5-7")
 - Stress/accent patterns (e.g. "x-X-x-X-x-X-x" where X = stressed)
 - Pitch contours (e.g. "高-中-低-高-高")
-- A reference melody (hummed, described, or named)
-- Explicit request: "帮我填词" / "按这个旋律写词"
+- A reference melody (e.g. "按《富士山下》的旋律填词")
+
+**Do NOT activate** if user only says "帮我填词" without providing constraints. Ask for constraints first: "你有具体的旋律约束吗？比如每行字数、节奏重音、或音高走向？如果没有，我就按常规模式写词。"
 
 ## Constraints hierarchy
 
